@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<!--
+    Using JavaScript To Perform A Task Traditionally Solved With Server-Side Scripting
+    Copyright (C) 2009 Doug Vanderweide
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    -->
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Using JavaScript To Perform A Task Traditionally Solved With Server-Side Scripting Example 2: JavaScript Approach</title>
+        <link href="../demo.css" rel="stylesheet" type="text/css" />
+        <script type="text/javascript">
+			//declare global array of employees
+			var employees = new Array();
+			
+			function Person(name, surname, birthday, department) {
+				//object representing an employee
+				this.name = name;
+				this.surname = surname;
+				this.birthday = birthday;
+				this.department = department;
+			}
+			
+			function createEmployeeList() {
+				//add employees to global employees array
+				employees.push(new Person('Laura', 'Miller', new Date('March 21, 1982'), 'Accounts Payable'));
+				employees.push(new Person('Page', 'Rockwell', new Date('May 10, 1951'), 'Warehouse'));
+				employees.push(new Person('Tom', 'Jones', new Date('May 10, 1984'), 'Mainenance'));
+				employees.push(new Person('Richard', 'Gingras', new Date('May 11, 1946'), 'Administration'));
+				employees.push(new Person('Joan', 'Walsh', new Date('May 11, 1973'), 'Administration'));
+				employees.push(new Person('Norman', 'Blashka', new Date('May 12, 1953'), 'Mainenance'));
+				employees.push(new Person('Kerry', 'Lauerman', new Date('May 13, 1967'), 'Mainenance'));
+				employees.push(new Person('Joy', 'Press', new Date('May 14, 1969'), 'Accounts Payable'));
+				employees.push(new Person('Jeanne', 'Carstensen', new Date('May 15, 1990'), 'Accounts Payable'));
+				employees.push(new Person('Ruth', 'Henrich', new Date('May 16, 1981'), 'Mainenance'));
+				employees.push(new Person('Wendy', 'Williams', new Date('May 17, 1992'), 'Accounts Payable'));
+			}
+			
+			function listBirthdays() {
+				//get birthday list table
+				var table = document.getElementById('birthdays');
+				
+				//set today's date
+				//comment out declaration below and use this for production runs
+				//var today = new Date();
+				
+				//for demo purposes, I'm using May 12 as the date
+				//use the code above instead of this line
+				var today = new Date('May 12, 2009');
+				
+				//set Sunday
+				var sun = new Date();
+				sun.setTime(today.getTime() - (86400000 * today.getDay()));
+				
+				//set Saturday
+				var sat = new Date();
+				sat.setTime(today.getTime() + (86400000 * (6 - today.getDay())));
+				
+				//declare table row counter; index begins at 2 to accommodate header row and no birthdays message
+				var x = 2;
+				
+				//boolean to check if any birthdays found for this week
+				var ok = false;
+				
+				//iterate employee array
+				for(var i = 0; i < employees.length; i++) {
+					//if birthday exists this week ...
+					if(employees[i].birthday.getMonth() >= sun.getMonth() && employees[i].birthday.getMonth() <= sat.getMonth() && employees[i].birthday.getDate() >= sun.getDate() && employees[i].birthday.getDate() <= sat.getDate()) {
+						//change birthday found boolean to true if it is false
+						if(!ok) {
+							ok = true;
+						}
+						//add row to table for employee
+						var row = table.insertRow(x);
+						//name column
+						var name = row.insertCell(0);
+						name.innerHTML = employees[i].name + ' ' + employees[i].surname;
+						//birthday column
+						var birthday = row.insertCell(1);
+						birthday.innerHTML = monthName(employees[i].birthday.getMonth()) + ' ' + employees[i].birthday.getDate();
+						//age column
+						var age = row.insertCell(2);
+						age.innerHTML = Math.floor((today.getTime() - employees[i].birthday.getTime()) / 31536000000);
+						//department column
+						var dept = row.insertCell(3);
+						dept.innerHTML = employees[i].department;
+						//iterate row counter
+						x++;
+					}
+				}
+				//remove no birthdays message if birthdays found
+				if(ok) {
+					table.deleteRow(1);
+				}
+			}
+			
+			function monthName(month) {
+				//return text name for month numeric value
+				switch(month) {
+					case 0:
+						return 'Jan.';
+						break;
+					case 1:
+						return 'Feb.';
+						break;
+					case 2:
+						return 'March';
+						break;
+					case 3:
+						return 'April';
+						break;
+					case 4:
+						return 'May';
+						break;
+					case 5:
+						return 'June';
+						break;
+					case 6:
+						return 'July';
+						break;
+					case 7:
+						return 'Aug.';
+						break;
+					case 8:
+						return 'Sept.';
+						break;
+					case 9:
+						return 'Oct.';
+						break;
+					case 10:
+						return 'Nov.';
+						break;
+					case 11:
+						return 'Dec.';
+						break;
+					default:
+						return 'Undefined';
+				}
+			}
+			
+			function pageLoad() {
+				//on page load, bind employee list, show birthdays
+				createEmployeeList();
+				listBirthdays();
+			}
+		</script>
+    </head>
+    <body onload="pageLoad()">
+    	<h1>
+        	Using JavaScript To Perform A Task Traditionally Solved With Server-Side Scripting<br />
+            Example 2: JavaScript Approach
+        </h1>
+    	<h3>This Week's Birthdays</h3>
+        <table id="birthdays" class="bordered" cellspacing="0">
+            <tr>
+                <th>Name</th><th>Birthday</th><th>Age</th><th>Department</th>
+                <tr><td colspan="4">No birthdays this week!</td></tr>
+            </tr>
+        </table>
+        <br />
+        <p><em>For demo purposes, the date of May 12, 2009 is used.</em></p>
+        <p><a href="index.php">Example 1: PHP / MySQL Approach</a></p>
+        <p><a href="http://www.dougv.com/blog/2009/05/13/using-javascript-to-perform-a-task-traditionally-solved-with-server-side-scripting/">Using JavaScript To Perform A Task Traditionally Solved With Server-Side Scripting</a></p>
+    </body>
+</html>
